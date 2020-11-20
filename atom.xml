@@ -34,13 +34,34 @@
   </entry>
   
   <entry>
-    <title>测试日期</title>
+    <title>测试密码</title>
+    <link href="http://example.com/2018/12/13/%E5%AF%86%E7%A0%81%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/"/>
+    <id>http://example.com/2018/12/13/%E5%AF%86%E7%A0%81%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/</id>
+    <published>2018-12-13T12:46:25.000Z</published>
+    <updated>2020-11-20T15:49:57.063Z</updated>
+    
+    <content type="html"><![CDATA[<p>不论什么时候，心里要有爱，眼里要有光</p><a id="more"></a><p>这里更多的内容</p><p>这里是18年，我刚入职不久，我希望能成为一个有价值的人</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;不论什么时候，心里要有爱，眼里要有光&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Diary" scheme="http://example.com/categories/Diary/"/>
+    
+    
+    <category term="Testing" scheme="http://example.com/tags/Testing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>我的博客哈哈啊哈</title>
     <link href="http://example.com/2018/11/27/1117/"/>
     <id>http://example.com/2018/11/27/1117/</id>
     <published>2018-11-27T13:07:35.000Z</published>
-    <updated>2020-11-17T09:32:27.948Z</updated>
+    <updated>2020-11-20T16:24:32.217Z</updated>
     
-    <content type="html"><![CDATA[<p>这就是一个简介</p><a id="more"></a><p>这里更多的内容</p><p>这里是18年，我刚入职不久，</p>]]></content>
+    <content type="html"><![CDATA[<p>这就是一个简介</p><a id="more"></a><p>这里更多的内容</p><p>这里是18年，我刚入职不久，</p><p><a href="">ifuxing.cool</a></p>]]></content>
     
     
     <summary type="html">&lt;p&gt;这就是一个简介&lt;/p&gt;</summary>

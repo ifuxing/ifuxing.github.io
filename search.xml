@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>测试日期</title>
+    <title>我的博客哈哈啊哈</title>
     <url>/2018/11/27/1117/</url>
     <content><![CDATA[<p>这就是一个简介</p>
 <a id="more"></a>
 <p>这里更多的内容</p>
 <p>这里是18年，我刚入职不久，</p>
+<p><a href="">ifuxing.cool</a></p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>测试密码</title>
+    <url>/2018/12/13/%E5%AF%86%E7%A0%81%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/</url>
+    <content><![CDATA[<p>不论什么时候，心里要有爱，眼里要有光</p>
+<a id="more"></a>
+<p>这里更多的内容</p>
+<p>这里是18年，我刚入职不久，我希望能成为一个有价值的人</p>
+]]></content>
+      <categories>
+        <category>Diary</category>
+      </categories>
+      <tags>
+        <tag>Testing</tag>
+      </tags>
   </entry>
   <entry>
     <title>星哥的测试blog</title>
