@@ -97,15 +97,13 @@
 </ul>
 <p>​    </p>
 <h3 id="EnableAutoConfiguration"><a href="#EnableAutoConfiguration" class="headerlink" title="@EnableAutoConfiguration"></a>@EnableAutoConfiguration</h3><ul>
-<li> <strong>介绍</strong></li>
-</ul>
-<ol>
-<li>@EnableAutoConfiguration 注解内部使用@Import(AutoConfigurationImportSelector.class)来加载配置类。 <ol start="2">
-<li>配置文件位置：META-INF/spring.factories，该配置文件中定义了大量的配置类，当 Spring Boot 应用启动时，会自动加载这些配置类，初始化Bean</li>
+<li><strong>介绍</strong><ol>
+<li>@EnableAutoConfiguration 注解内部使用@Import(AutoConfigurationImportSelector.class)来加载配置类。 </li>
+<li> 配置文件位置：META-INF/spring.factories，该配置文件中定义了大量的配置类，当 Spring Boot 应用启动时，会自动加载这些配置类，初始化Bean</li>
 <li>==注意：==并不是所有的Bean都会被初始化，在配置类中使用Condition来加载满足条件的Bean</li>
 </ol>
 </li>
-</ol>
+</ul>
 <h3 id="自定义starter步骤分析"><a href="#自定义starter步骤分析" class="headerlink" title="自定义starter步骤分析"></a>自定义starter步骤分析</h3><ul>
 <li><p><strong>需求：</strong></p>
 </li>
