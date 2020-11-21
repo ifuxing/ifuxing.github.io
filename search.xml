@@ -16,14 +16,15 @@
       </tags>
   </entry>
   <entry>
-    <title>简述SpringBoot原理分析_</title>
+    <title>简述Spring Boot原理分析_</title>
     <url>/2019/02/13/%E7%AE%80%E8%BF%B0SpringBoot%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90_/</url>
-    <content><![CDATA[<h2 id="自动配置原理"><a href="#自动配置原理" class="headerlink" title="自动配置原理"></a>自动配置原理</h2><h3 id="Conditional注解"><a href="#Conditional注解" class="headerlink" title="@Conditional注解"></a>@Conditional注解</h3><ul>
+    <content><![CDATA[<p>​        Spring Boot基于Spring4.0设计的，不仅继承了Spring框架原有的优秀特性，而且还通过简化配置来进一步简化了Spring应用的整个搭建和开发过程。另外Spring Boot通过集成大量的框架使得依赖包的版本冲突，以及引用的不稳定性等问题得到了很好的解决。以下纯属个人简单的了解，并没有列出源码深入叙述，是为了帮助自己更好的理解Spring Boot。</p>
+<a id="more"></a>
+
+<h2 id="自动配置原理"><a href="#自动配置原理" class="headerlink" title="自动配置原理"></a>自动配置原理</h2><h3 id="Conditional注解"><a href="#Conditional注解" class="headerlink" title="@Conditional注解"></a>@Conditional注解</h3><ul>
 <li><p>@Condition是Spring4.0后引入的条件化配置接口，通过实现Condition接口可以完成有条件的加载相应的Bean</p>
 </li>
 <li><p>@Conditional要配和Condition的实现类（ClassCondition）进行使用</p>
-<a id="more"></a>
-
 <ul>
 <li><h4 id="实现流程"><a href="#实现流程" class="headerlink" title="实现流程"></a>实现流程</h4><ol>
 <li><p>加上@Conditionl注解后会对这个已经注入到Spring的IOC容器中Bean进行判断，该注解有很多实现类，是根据各种不同的情况来判断，大多通过获取注解中的字节码文件来进行判断，可以根据所有的方法名来了解该功能</p>
@@ -40,7 +41,7 @@
 <p><img src="https://cdn.jsdelivr.net/gh/self-disciplined/pic_star@main/notes-pic/20201103210940.png" alt="image-20201103210939890"></p>
 </li>
 <li><p>代码示例</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="comment">//字节码存在则加载下面的Bean</span></span><br><span class="line">    <span class="meta">@ConditionOnClass(&quot;com.alibaba.fastjson.JSON&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> User <span class="title">user</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> User();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConditionalOnProperty(name = &quot;itcast&quot;,havingValue = &quot;itheima&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> User <span class="title">user2</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> User();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line">  <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserConfig</span> </span>&#123;</span><br><span class="line">  </span><br><span class="line">      <span class="meta">@Bean</span></span><br><span class="line">      <span class="comment">//字节码存在则加载下面的Bean</span></span><br><span class="line">      <span class="meta">@ConditionOnClass(&quot;com.alibaba.fastjson.JSON&quot;)</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> User <span class="title">user</span><span class="params">()</span></span>&#123;</span><br><span class="line">          <span class="keyword">return</span> <span class="keyword">new</span> User();</span><br><span class="line">      &#125;</span><br><span class="line">  </span><br><span class="line">      <span class="meta">@Bean</span></span><br><span class="line">      <span class="meta">@ConditionalOnProperty(name = &quot;itcast&quot;,havingValue = &quot;itheima&quot;)</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> User <span class="title">user2</span><span class="params">()</span></span>&#123;</span><br><span class="line">          <span class="keyword">return</span> <span class="keyword">new</span> User();</span><br><span class="line">      &#125;</span><br><span class="line">  </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 
 
 
@@ -65,7 +66,7 @@
 </ul>
 <h3 id="Enable-的相关注解"><a href="#Enable-的相关注解" class="headerlink" title="@Enable* 的相关注解"></a>@Enable* 的相关注解</h3><ul>
 <li>用于动态开启某种功能（就是获取相关类及其所含方法），==底层原理的就是使用@import注解导入一些配置类，实现Bean的动态加载==</li>
-<li>==注意：==SpringBoot工程不能直接获取jar包中定义的Bean<ul>
+<li>==注意：==Spring Boot工程不能直接获取jar包中定义的Bean<ul>
 <li>原因：@ComponentScan的扫描范围是当前引导类所在的包及其子包</li>
 <li>解决：<ol>
 <li>使用@ComponentScan扫描com.itheima.config（配置类）</li>
@@ -80,7 +81,7 @@
 <li><p>@Enable*底层依赖于@Import注解导入一些类，使用@Import导入的类会被Spring加载到IOC容器中。而@Import提供4中用法：</p>
 <ol>
 <li><p><strong>导入Bean</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Import(User.class)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">      ConfigurableApplicationContext context = SpringApplication.run(SpringbootEnableApplication.class, args);</span><br><span class="line">  	</span><br><span class="line">      <span class="comment">//直接导入Bean创建出来的名字不一定与导入的相同，需要用这个方法查看一下</span></span><br><span class="line">      User user = context.getBean(User.class); </span><br><span class="line">      System.out.println(user);</span><br><span class="line">  </span><br><span class="line">      Role role = context.getBean(Role.class);</span><br><span class="line">      System.out.println(role);</span><br><span class="line">      Map&lt;String, User  map = context.getBeansOfType(User.class);</span><br><span class="line">      System.out.println(map);</span><br><span class="line">  </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Import(User.class)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">      ConfigurableApplicationContext context = SpringApplication.run(Spring BootEnableApplication.class, args);</span><br><span class="line">  	</span><br><span class="line">      <span class="comment">//直接导入Bean创建出来的名字不一定与导入的相同，需要用这个方法查看一下</span></span><br><span class="line">      User user = context.getBean(User.class); </span><br><span class="line">      System.out.println(user);</span><br><span class="line">  </span><br><span class="line">      Role role = context.getBean(Role.class);</span><br><span class="line">      System.out.println(role);</span><br><span class="line">      Map&lt;String, User  map = context.getBeansOfType(User.class);</span><br><span class="line">      System.out.println(map);</span><br><span class="line">  </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>导入配置类</strong></p>
 <p><img src="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107145805.png" alt="image-20201107145805680"></p>
@@ -100,7 +101,7 @@
 </ul>
 <ol>
 <li>@EnableAutoConfiguration 注解内部使用@Import(AutoConfigurationImportSelector.class)来加载配置类。 <ol start="2">
-<li>配置文件位置：META-INF/spring.factories，该配置文件中定义了大量的配置类，当 SpringBoot 应用启动时，会自动加载这些配置类，初始化Bean</li>
+<li>配置文件位置：META-INF/spring.factories，该配置文件中定义了大量的配置类，当 Spring Boot 应用启动时，会自动加载这些配置类，初始化Bean</li>
 <li>==注意：==并不是所有的Bean都会被初始化，在配置类中使用Condition来加载满足条件的Bean</li>
 </ol>
 </li>
@@ -108,7 +109,7 @@
 <h3 id="自定义starter步骤分析"><a href="#自定义starter步骤分析" class="headerlink" title="自定义starter步骤分析"></a>自定义starter步骤分析</h3><ul>
 <li><p><strong>需求：</strong></p>
 </li>
-<li><p>自定义redis-starter，要求当导入redis坐标时，SpringBoot自动创建Jedis的Bean。</p>
+<li><p>自定义redis-starter，要求当导入redis坐标时，Spring Boot自动创建Jedis的Bean。</p>
 <ul>
 <li><strong>步骤：</strong></li>
 </ul>
@@ -135,7 +136,7 @@
 </li>
 </ul>
 </li>
-<li><p><strong>SpringBoot 在项目启动时，会对几个监听器进行回调</strong></p>
+<li><p><strong>Spring Boot 在项目启动时，会对几个监听器进行回调</strong></p>
 <ul>
 <li>==其中==：<ul>
 <li>MyApplicationRunner和MyCommandLineRunner都是当项目启动后执行，使用@Component放入容器即可使用</li>
