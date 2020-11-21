@@ -462,7 +462,7 @@
 <li><p>true则将Spring IOC容器中的Bean进行加载，否则不加载</p>
 </li>
 <li><p>常用条件注解</p>
-<p><img src="https://cdn.jsdelivr.net/gh/self-disciplined/pic_star@main/notes-pic/20201103210940.png" alt="image-20201103210939890"></p>
+<p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/self-disciplined/pic_star@main/notes-pic/20201103210940.png" alt="image-20201103210939890"></p>
 </li>
 <li><p>代码示例</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line">  <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserConfig</span> </span>&#123;</span><br><span class="line">  </span><br><span class="line">      <span class="meta">@Bean</span></span><br><span class="line">      <span class="comment">//字节码存在则加载下面的Bean</span></span><br><span class="line">      <span class="meta">@ConditionOnClass(&quot;com.alibaba.fastjson.JSON&quot;)</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> User <span class="title">user</span><span class="params">()</span></span>&#123;</span><br><span class="line">          <span class="keyword">return</span> <span class="keyword">new</span> User();</span><br><span class="line">      &#125;</span><br><span class="line">  </span><br><span class="line">      <span class="meta">@Bean</span></span><br><span class="line">      <span class="meta">@ConditionalOnProperty(name = &quot;itcast&quot;,havingValue = &quot;itheima&quot;)</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> User <span class="title">user2</span><span class="params">()</span></span>&#123;</span><br><span class="line">          <span class="keyword">return</span> <span class="keyword">new</span> User();</span><br><span class="line">      &#125;</span><br><span class="line">  </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
@@ -508,13 +508,13 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Import(User.class)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">      ConfigurableApplicationContext context = SpringApplication.run(Spring BootEnableApplication.class, args);</span><br><span class="line">  	</span><br><span class="line">      <span class="comment">//直接导入Bean创建出来的名字不一定与导入的相同，需要用这个方法查看一下</span></span><br><span class="line">      User user = context.getBean(User.class); </span><br><span class="line">      System.out.println(user);</span><br><span class="line">  </span><br><span class="line">      Role role = context.getBean(Role.class);</span><br><span class="line">      System.out.println(role);</span><br><span class="line">      Map&lt;String, User  map = context.getBeansOfType(User.class);</span><br><span class="line">      System.out.println(map);</span><br><span class="line">  </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>导入配置类</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107145805.png" alt="image-20201107145805680"></p>
+<p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107145805.png" alt="image-20201107145805680"></p>
 </li>
 <li><p><strong>导入 ImportSelector 实现类。一般用于加载配置文件中的类</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107151352.png" alt="image-20201107151352162"></p>
+<p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107151352.png" alt="image-20201107151352162"></p>
 </li>
 <li><p><strong>导入 ImportBeanDefinitionRegistrar 实现类。</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107154713.png" alt="image-20201107154713551"></p>
+<p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107154713.png" alt="image-20201107154713551"></p>
 </li>
 </ol>
 </li>
@@ -574,15 +574,15 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyCommandLineRunner</span> <span class="keyword">implements</span> <span class="title">CommandLineRunner</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(String... args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;CommandLineRunner...run&quot;</span>);</span><br><span class="line">        System.out.println(Arrays.asList(args));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>ApplicationContextInitializer</p>
-<p><img src="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107211340.png" alt="image-20201107211340369"></p>
+<p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107211340.png" alt="image-20201107211340369"></p>
 </li>
 <li><p>SpringApplicationRunListener</p>
 </li>
 </ol>
-<p><img src="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107212127.png" alt="image-20201107212127309"></p>
+<p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107212127.png" alt="image-20201107212127309"></p>
 </li>
 </ul>
-<h2 id="启动流程图"><a href="#启动流程图" class="headerlink" title="启动流程图"></a>启动流程图</h2><p><img src="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107222428.png"></p>
+<h2 id="启动流程图"><a href="#启动流程图" class="headerlink" title="启动流程图"></a>启动流程图</h2><p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107222428.png"></p>
 
       
     </div>
@@ -1393,5 +1393,10 @@
 
   
 
-</body>
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=i;var e=n.imageLazyLoadSetting.isSPA,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight||document.documentElement.clientHeight)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},n.src=i}()}i(),n.addEventListener("scroll",function(){var t,e;t=i,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
 </html>
