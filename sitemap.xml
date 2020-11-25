@@ -2,16 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://ifuxing.cool/2020/02/19/MyBatis-Plus%E8%BF%9B%E9%98%B6%E4%BA%86%E8%A7%A3/</loc>
+    <loc>http://ifuxing.cool/2020/02/17/MyBatisPlus+LomBok/</loc>
     
     <lastmod>2020-11-24</lastmod>
     
   </url>
   
   <url>
-    <loc>http://ifuxing.cool/2020/02/17/MyBatisPlus+LomBok/</loc>
+    <loc>http://ifuxing.cool/2020/02/19/MyBatis-Plus%E8%BF%9B%E9%98%B6%E4%BA%86%E8%A7%A3/</loc>
     
-    <lastmod>2020-11-23</lastmod>
+    <lastmod>2020-11-24</lastmod>
     
   </url>
   
@@ -60,7 +60,7 @@
 
   <url>
     <loc>http://ifuxing.cool/</loc>
-    <lastmod>2020-11-24</lastmod>
+    <lastmod>2020-11-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -68,21 +68,21 @@
   
   <url>
     <loc>http://ifuxing.cool/tags/Efficient/</loc>
-    <lastmod>2020-11-24</lastmod>
+    <lastmod>2020-11-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://ifuxing.cool/tags/Testing/</loc>
-    <lastmod>2020-11-24</lastmod>
+    <lastmod>2020-11-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://ifuxing.cool/tags/Spring-Boot/</loc>
-    <lastmod>2020-11-24</lastmod>
+    <lastmod>2020-11-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
@@ -91,14 +91,14 @@
   
   <url>
     <loc>http://ifuxing.cool/categories/Java/</loc>
-    <lastmod>2020-11-24</lastmod>
+    <lastmod>2020-11-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>http://ifuxing.cool/categories/Diary/</loc>
-    <lastmod>2020-11-24</lastmod>
+    <lastmod>2020-11-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
