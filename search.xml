@@ -3,7 +3,10 @@
   <entry>
     <title>MyBatis-Plus进阶了解</title>
     <url>/2020/02/19/MyBatis-Plus%E8%BF%9B%E9%98%B6%E4%BA%86%E8%A7%A3/</url>
-    <content><![CDATA[<p>MybBtis-Plus提供了AbstractWrapper抽象类，提供了很多SQL语法支持的方法，比如模糊查询，比较，区间，分组查询，排序，判断空，子查询等等，方便我们用面向对象的方式去实现sql语句；AbstractWrapper有两个常用的实现类，分别是QueryWrapper和UpdateWrapper，我们以后就用这两个实现类；</p>
+    <content><![CDATA[<blockquote class="blockquote-center">
+<p>MybBtis-Plus提供了AbstractWrapper抽象类，提供了很多SQL语法支持的方法，比如模糊查询，比较，区间，分组查询，排序，判断空，子查询等等，方便我们用面向对象的方式去实现sql语句；AbstractWrapper有两个常用的实现类，分别是QueryWrapper和UpdateWrapper，我们以后就用这两个实现类；</p>
+
+</blockquote>
 <a id="more"></a>
 
 <h1 id="一-MybBtis-Plus条件构造器"><a href="#一-MybBtis-Plus条件构造器" class="headerlink" title="一.MybBtis-Plus条件构造器"></a>一.MybBtis-Plus条件构造器</h1><p>这篇主要是讲述MybBtis-Plus的条件构造器,</p>
@@ -81,10 +84,10 @@
 
 
 
-<h1 id="二-MyBatis-Plus向数据库表格中添加通用字段"><a href="#二-MyBatis-Plus向数据库表格中添加通用字段" class="headerlink" title="二. MyBatis-Plus向数据库表格中添加通用字段"></a>二. MyBatis-Plus向数据库表格中添加通用字段</h1><h4 id="1-实体类中"><a href="#1-实体类中" class="headerlink" title="1. 实体类中"></a>1. 实体类中</h4><p>给需要加入通用字段的属性上加如**@TableField(fill = FieldFill.INSERT_UPDATE)**表示插入，修改和插入时候可以自动填充</p>
+<h1 id="二-MyBatis-Plus向数据库表格中添加通用字段"><a href="#二-MyBatis-Plus向数据库表格中添加通用字段" class="headerlink" title="二. MyBatis-Plus向数据库表格中添加通用字段"></a>二. MyBatis-Plus向数据库表格中添加通用字段</h1><h3 id="1-实体类中"><a href="#1-实体类中" class="headerlink" title="1. 实体类中"></a>1. 实体类中</h3><p>给需要加入通用字段的属性上加如**@TableField(fill = FieldFill.INSERT_UPDATE)**表示插入，修改和插入时候可以自动填充</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@TableField(fill = FieldFill.INSERT_UPDATE)</span></span><br><span class="line"><span class="keyword">private</span> LocalDateTime lastUpdateTime;</span><br></pre></td></tr></table></figure>
 
-<h4 id="2-创建一个工具类填充属性"><a href="#2-创建一个工具类填充属性" class="headerlink" title="2. 创建一个工具类填充属性"></a>2. 创建一个工具类填充属性</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>：ifuxing</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>：2020/2/19/15:18</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GeneralMetaObjectHandler</span> <span class="keyword">implements</span> <span class="title">MetaObjectHandler</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertFill</span><span class="params">(MetaObject metaObject)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">            	    <span class="comment">//重点是这个方法，第一个参数为需要设置的字段名，第二个是要设置的值</span></span><br><span class="line">			setFieldValByName(<span class="string">&quot;lastUpdateTime&quot;</span>,LocalDateTime.now(),metaObject);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateFill</span><span class="params">(MetaObject metaObject)</span> </span>&#123;</span><br><span class="line">		insertFill(metaObject);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="2-创建一个工具类填充属性"><a href="#2-创建一个工具类填充属性" class="headerlink" title="2. 创建一个工具类填充属性"></a>2. 创建一个工具类填充属性</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>：ifuxing</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>：2020/2/19/15:18</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GeneralMetaObjectHandler</span> <span class="keyword">implements</span> <span class="title">MetaObjectHandler</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertFill</span><span class="params">(MetaObject metaObject)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">            	    <span class="comment">//重点是这个方法，第一个参数为需要设置的字段名，第二个是要设置的值</span></span><br><span class="line">			setFieldValByName(<span class="string">&quot;lastUpdateTime&quot;</span>,LocalDateTime.now(),metaObject);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateFill</span><span class="params">(MetaObject metaObject)</span> </span>&#123;</span><br><span class="line">		insertFill(metaObject);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 ]]></content>
       <categories>
@@ -97,13 +100,17 @@
   <entry>
     <title>LomBok+MyBatis-Plus让你的代码更简介高效</title>
     <url>/2020/02/17/MyBatisPlus+LomBok/</url>
-    <content><![CDATA[<ul>
+    <content><![CDATA[<blockquote class="blockquote-center">
+<ul>
 <li>Lombok是一种Java实用工具，能通过注解的方式，在编译时自动为属性生成构造器,可用来帮助开发人员消除Java的冗长代码，尤其是对于简单的Java对象（POJO）。</li>
 <li>Mybatis-Plus（简称 MP）是一个 MyBatis 的增强工具，在 MyBatis 的基础上只做增强不做改变，为简化开发、提高效率而生。</li>
 </ul>
+
+</blockquote>
+
 <a id="more"></a>
 
-<h1 id="一-Lombok"><a href="#一-Lombok" class="headerlink" title="一.Lombok"></a>一.Lombok</h1><p>​    Lombok能通过注解的方式，在编译时自动为属性生成构造器、getter/setter、equals、hashcode、toString方法。出现的神奇就是在源码中没有getter和setter方法，但是在编译生成的字节码文件中有getter和setter方法。这样就省去了手动重建这些代码的麻烦，使代码看起来更简洁些。</p>
+<h1 id="一-Lombok"><a href="#一-Lombok" class="headerlink" title="一.Lombok"></a>一.Lombok</h1><p>Lombok能通过注解的方式，在编译时自动为属性生成构造器、getter/setter、equals、hashcode、toString方法。出现的神奇就是在源码中没有getter和setter方法，但是在编译生成的字节码文件中有getter和setter方法。这样就省去了手动重建这些代码的麻烦，使代码看起来更简洁些。</p>
 <h3 id="1-工程中导入依赖"><a href="#1-工程中导入依赖" class="headerlink" title="1.工程中导入依赖"></a>1.工程中导入依赖</h3><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>1.18.10<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="2-下载插件"><a href="#2-下载插件" class="headerlink" title="2. 下载插件"></a>2. 下载插件</h3><p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201123115040.png" alt="image-20201123115040589"></p>
@@ -170,7 +177,7 @@
 
 
 
-<h2 id="二-MyBatis-Plus"><a href="#二-MyBatis-Plus" class="headerlink" title="二. MyBatis-Plus"></a>二. MyBatis-Plus</h2><h3 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h3><p>​        Mybatis-Plus（简称 MP）是一个 Mybatis 的增强工具，在 Mybatis 的基础上只做增强不做改变，为简化开发、提高效率而生。那么它是怎么增强的呢？其实就是它已经封装好了一些 crud 方法，我们不需要再写 xml 了，直接调用这些方法就行。</p>
+<h2 id="二-MyBatis-Plus"><a href="#二-MyBatis-Plus" class="headerlink" title="二. MyBatis-Plus"></a>二. MyBatis-Plus</h2><h3 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h3><p>Mybatis-Plus（简称 MP）是一个 Mybatis 的增强工具，在 Mybatis 的基础上只做增强不做改变，为简化开发、提高效率而生。那么它是怎么增强的呢？其实就是它已经封装好了一些 crud 方法，我们不需要再写 xml 了，直接调用这些方法就行。</p>
 <h3 id="2-特性"><a href="#2-特性" class="headerlink" title="2. 特性"></a>2. 特性</h3><table>
 <thead>
 <tr>
@@ -240,13 +247,13 @@
 <p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201115200013.png" alt="image-20201115200013776"></p>
 <p>代码实现</p>
 <p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201115195839.png" alt="image-20201115195839105"></p>
-<h4 id="4-3-更新"><a href="#4-3-更新" class="headerlink" title="4.3  更新"></a>4.3  更新</h4><p> 两种更新方法</p>
+<h4 id="4-3-更新"><a href="#4-3-更新" class="headerlink" title="4.3  更新"></a>4.3  更新</h4><p>两种更新方法</p>
 <p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201115200423.png" alt="image-20201115200423286"></p>
-<p> 代码实现</p>
+<p>代码实现</p>
 <p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201115201337.png" alt="image-20201115201337151"></p>
-<h4 id="4-4-分页查询"><a href="#4-4-分页查询" class="headerlink" title="4.4 分页查询"></a>4.4 分页查询</h4><p>代码实现</p>
-<p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201115205245.png" alt="image-20201115205245451"></p>
-<p> ==注意事项==</p>
+<h4 id="4-4-分页查询"><a href="#4-4-分页查询" class="headerlink" title="4.4 分页查询"></a>4.4 分页查询</h4><p><strong>代码实现</strong></p>
+<p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201125162739.png" alt="image-20201125162739555"></p>
+<p><strong>注意事项</strong></p>
 <p>使用mp的分页查询必须要设置一个拦截器</p>
 <p><strong>3.4.0之前的版本用这个</strong></p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> PaginationInterceptor <span class="title">paginationInterceptor</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> PaginationInterceptor();</span><br><span class="line">&#125;</span><br><span class="line">  </span><br></pre></td></tr></table></figure>
@@ -270,12 +277,70 @@
       </tags>
   </entry>
   <entry>
-    <title>测试密码</title>
-    <url>/2018/12/13/%E5%AF%86%E7%A0%81%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95/</url>
-    <content><![CDATA[<p>不论什么时候，心里要有爱，眼里要有光</p>
+    <title>关于Dubbo序列化的整理</title>
+    <url>/2020/03/19/%E5%85%B3%E4%BA%8EDubbo%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%95%B4%E7%90%86/</url>
+    <content><![CDATA[<blockquote class="blockquote-center">
+<p>最近遇见了一个问题，在Dubbo框架下使用MyBatis-Plus，如果这时Controller层对Services调用时，有Querywrapper作为参数就会报错，查了很多资料，都解决不了，后面发现是因为dubbo无法传输复杂对象，无法解决，必须写在service层中，顺便一起总结一下dubbo序列化问题</p>
+
+</blockquote>
 <a id="more"></a>
-<p>这里更多的内容</p>
-<p>这里是18年，我刚入职不久，我希望能成为一个有价值的人</p>
+
+<h2 id="一-发现错误"><a href="#一-发现错误" class="headerlink" title="一. 发现错误"></a>一. 发现错误</h2><p>在 Dubbo的Consumer的Controller中执行以Querywrpper作为参数的代码，就会报错。开始的时候报Hessian序列化的错误，我以为是序列化方式的问题，就改成了Kryo，还是报错，后面去网上各种查各种试都不行，后面把代码放入Service层中之后突然好了。所以我觉得大概率是Dubbo无法序列化特别复杂的对象，所以只要按规范将执行逻辑调用的代码放在Service层即可。</p>
+<h2 id="二-整理Dubbo序列化问题"><a href="#二-整理Dubbo序列化问题" class="headerlink" title="二. 整理Dubbo序列化问题"></a>二. 整理Dubbo序列化问题</h2><h3 id="1-定义抽象接口"><a href="#1-定义抽象接口" class="headerlink" title="1.定义抽象接口"></a>1.定义抽象接口</h3><p>Dubbo框架中的序列化实现的种类有各种各样的,所以为了方便给他们一个统一的规范,于是使用<code>Serialization</code>作为序列化的统一接口,无论任何方案都需要实现该接口</p>
+<h3 id="2-序列化实现"><a href="#2-序列化实现" class="headerlink" title="2.序列化实现"></a>2.序列化实现</h3><p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201130110248.png" alt="image-20201130110247858"></p>
+<h4 id="2-1-Kryo"><a href="#2-1-Kryo" class="headerlink" title="2.1 Kryo"></a>2.1 Kryo</h4><ul>
+<li><p><strong>支持的类型</strong></p>
+<ol>
+<li>枚举</li>
+<li>集合、数组</li>
+<li>子类/多态</li>
+<li>循环引用</li>
+<li>内部类</li>
+<li>泛型</li>
+</ol>
+</li>
+<li><p><strong>注意事项</strong></p>
+<ol>
+<li><p><strong>Kryo 不支持 Bean 中增删字段</strong> 。如果使用 Kryo 序列化了一个类，存入了 Redis，对类进行了修改，会导致反序列化的异常。</p>
+</li>
+<li><p>使用反射创建的一些类序列化的支持，如使用 Arrays.asList(); 创建的 List 对象，会引起序列化异常。但 new ArrayList() 创建的 List 对象则不会，</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Exception in thread <span class="string">&quot;main&quot;</span> com.esotericsoftware.kryo.KryoException: <span class="function">Class cannot be <span class="title">created</span> <span class="params">(missing no-arg constructor)</span>: java.util.Arrays$ArrayList</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>不支持包含无参构造器类的反序列化</strong>，尝试反序列化一个不包含无参构造器的类将会得到以下的异常：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Exception in thread <span class="string">&quot;main&quot;</span> com.esotericsoftware.kryo.KryoException: <span class="function">Class cannot be <span class="title">created</span> <span class="params">(missing no-arg constructor)</span>: moe.cnkirito.Xxx</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+<li><p><strong>线程安全</strong></p>
+<p>Kryo 是线程不安全的，意味着每当需要序列化和反序列化时都需要实例化一次，或者借助 ThreadLocal 来维护以保证其线程安全。</p>
+</li>
+</ul>
+<h4 id="2-2-Hessian"><a href="#2-2-Hessian" class="headerlink" title="2.2 Hessian"></a>2.2 Hessian</h4><p>支持跨语言，序列化后字节数适中，API 易用。是国内主流 rpc 框架：dubbo，motan 的默认序列化协议。</p>
+<p><strong>注意事项</strong></p>
+<p>使用 Hessian 序列化包含 BigDecimal 字段的对象时会导致其值一直为 0，不注意这个 bug 会导致很大的问题，具体解决方法，见<a href="https://my.oschina.net/wlmouse/blog/3053308">Hessian不能正确序列化和反序列化BigDecimal的解决</a></p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Dubbo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>测试</title>
+    <url>/2018/12/13/%E6%A8%A1%E6%9D%BF%E6%B5%8B%E8%AF%95/</url>
+    <content><![CDATA[<blockquote class="blockquote-center">
+<p>不论什么时候，心里要有爱，眼里要有光</p>
+
+</blockquote>
+<a id="more"></a>
+
+
+
+
+<div class="note success"><p>我爱科比</p></div>
+
+<p><a href="https://ifuxing.cool>">我爱科比</a></p>
 ]]></content>
       <categories>
         <category>Diary</category>
@@ -286,14 +351,15 @@
   </entry>
   <entry>
     <title>简述Spring Boot原理分析_</title>
-    <url>/2019/02/13/%E7%AE%80%E8%BF%B0SpringBoot%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90_/</url>
-    <content><![CDATA[<p>​        Spring Boot基于Spring4.0设计的，不仅继承了Spring框架原有的优秀特性，而且还通过简化配置来进一步简化了Spring应用的整个搭建和开发过程。另外Spring Boot通过集成大量的框架使得依赖包的版本冲突，以及引用的不稳定性等问题得到了很好的解决。以下纯属个人简单的了解，并没有列出源码深入叙述，是为了帮助自己更好的理解Spring Boot。</p>
+    <url>/2019/02/13/%E7%AE%80%E8%BF%B0SpringBoot%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<blockquote class="blockquote-center">
+<p>Spring Boot基于Spring4.0设计的，不仅继承了Spring框架原有的优秀特性，而且还通过简化配置来进一步简化了Spring应用的整个搭建和开发过程。另外Spring Boot通过集成大量的框架使得依赖包的版本冲突，以及引用的不稳定性等问题得到了很好的解决。以下纯属个人简单的了解，并没有列出源码深入叙述，是为了帮助自己更好的理解Spring Boot。</p>
+
+</blockquote>
 <a id="more"></a>
 
-<h2 id="自动配置原理"><a href="#自动配置原理" class="headerlink" title="自动配置原理"></a>自动配置原理</h2><h3 id="Conditional注解"><a href="#Conditional注解" class="headerlink" title="@Conditional注解"></a>@Conditional注解</h3><ul>
-<li><p>@Condition是Spring4.0后引入的条件化配置接口，通过实现Condition接口可以完成有条件的加载相应的Bean</p>
-</li>
-<li><p>@Conditional要配和Condition的实现类（ClassCondition）进行使用</p>
+<h2 id="一-自动配置原理"><a href="#一-自动配置原理" class="headerlink" title="一. 自动配置原理"></a>一. 自动配置原理</h2><h3 id="1-Conditional注解"><a href="#1-Conditional注解" class="headerlink" title="1. @Conditional注解"></a>1. @Conditional注解</h3><p>@Condition是Spring4.0后引入的条件化配置接口，通过实现Condition接口可以完成有条件的加载相应的Bean</p>
+<p>@Conditional要配和Condition的实现类（ClassCondition）进行使用</p>
 <ul>
 <li><h4 id="实现流程"><a href="#实现流程" class="headerlink" title="实现流程"></a>实现流程</h4><ol>
 <li><p>加上@Conditionl注解后会对这个已经注入到Spring的IOC容器中Bean进行判断，该注解有很多实现类，是根据各种不同的情况来判断，大多通过获取注解中的字节码文件来进行判断，可以根据所有的方法名来了解该功能</p>
@@ -320,9 +386,7 @@
 </ol>
 </li>
 </ul>
-</li>
-</ul>
-<h3 id="切换内置服务器"><a href="#切换内置服务器" class="headerlink" title="切换内置服务器"></a>切换内置服务器</h3><ul>
+<h3 id="2-切换内置服务器"><a href="#2-切换内置服务器" class="headerlink" title="2. 切换内置服务器"></a>2. 切换内置服务器</h3><ul>
 <li><h4 id="流程："><a href="#流程：" class="headerlink" title="流程："></a>流程：</h4><ol>
 <li>在pom文件中将starter-web的依赖中排除starter-tomcat的依赖</li>
 <li>加入starter-jetty的依赖即可</li>
@@ -333,9 +397,9 @@
 </ul>
 </li>
 </ul>
-<h3 id="Enable-的相关注解"><a href="#Enable-的相关注解" class="headerlink" title="@Enable* 的相关注解"></a>@Enable* 的相关注解</h3><ul>
-<li>用于动态开启某种功能（就是获取相关类及其所含方法），==底层原理的就是使用@import注解导入一些配置类，实现Bean的动态加载==</li>
-<li>==注意：==Spring Boot工程不能直接获取jar包中定义的Bean<ul>
+<h3 id="3-Enable-的相关注解"><a href="#3-Enable-的相关注解" class="headerlink" title="3. @Enable* 的相关注解"></a>3. @Enable* 的相关注解</h3><ul>
+<li>用于动态开启某种功能（就是获取相关类及其所含方法），<strong>底层原理的就是使用@import注解导入一些配置类，实现Bean的动态加载</strong></li>
+<li><strong>注意：</strong>Spring Boot工程不能直接获取jar包中定义的Bean<ul>
 <li>原因：@ComponentScan的扫描范围是当前引导类所在的包及其子包</li>
 <li>解决：<ol>
 <li>使用@ComponentScan扫描com.itheima.config（配置类）</li>
@@ -346,7 +410,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="Import注解"><a href="#Import注解" class="headerlink" title="@Import注解"></a>@Import注解</h3><ul>
+<h3 id="4-Import注解"><a href="#4-Import注解" class="headerlink" title="4. @Import注解"></a>4. @Import注解</h3><ul>
 <li><p>@Enable*底层依赖于@Import注解导入一些类，使用@Import导入的类会被Spring加载到IOC容器中。而@Import提供4中用法：</p>
 <ol>
 <li><p><strong>导入Bean</strong></p>
@@ -365,7 +429,7 @@
 </li>
 </ul>
 <p>​    </p>
-<h3 id="EnableAutoConfiguration"><a href="#EnableAutoConfiguration" class="headerlink" title="@EnableAutoConfiguration"></a>@EnableAutoConfiguration</h3><ul>
+<h3 id="5-EnableAutoConfiguration"><a href="#5-EnableAutoConfiguration" class="headerlink" title="5. @EnableAutoConfiguration"></a>5. @EnableAutoConfiguration</h3><ul>
 <li><strong>介绍</strong><ol>
 <li>@EnableAutoConfiguration 注解内部使用@Import(AutoConfigurationImportSelector.class)来加载配置类。 </li>
 <li> 配置文件位置：META-INF/spring.factories，该配置文件中定义了大量的配置类，当 Spring Boot 应用启动时，会自动加载这些配置类，初始化Bean</li>
@@ -373,7 +437,7 @@
 </ol>
 </li>
 </ul>
-<h3 id="自定义starter步骤分析"><a href="#自定义starter步骤分析" class="headerlink" title="自定义starter步骤分析"></a>自定义starter步骤分析</h3><ul>
+<h3 id="6-自定义starter步骤分析"><a href="#6-自定义starter步骤分析" class="headerlink" title="6. 自定义starter步骤分析"></a>6. 自定义starter步骤分析</h3><ul>
 <li><p><strong>需求：</strong></p>
 </li>
 <li><p>自定义redis-starter，要求当导入redis坐标时，Spring Boot自动创建Jedis的Bean。</p>
@@ -391,9 +455,7 @@
 </li>
 </ol>
 <hr>
-<h2 id="事件监听"><a href="#事件监听" class="headerlink" title="事件监听"></a>事件监听</h2><ul>
-<li><p><strong>简介</strong></p>
-<ul>
+<h2 id="二-事件监听"><a href="#二-事件监听" class="headerlink" title="二.事件监听"></a>二.事件监听</h2><h4 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h4><ul>
 <li>Java中的事件监听机制定义了以下几个角色：</li>
 <li><ol>
 <li>事件：Event，继承 java.util.EventObject 类的对象</li>
@@ -402,10 +464,8 @@
 </ol>
 </li>
 </ul>
-</li>
-<li><p><strong>Spring Boot 在项目启动时，会对几个监听器进行回调</strong></p>
-<ul>
-<li>==其中==：<ul>
+<h4 id="2-Spring-Boot-在项目启动时，会对几个监听器进行回调"><a href="#2-Spring-Boot-在项目启动时，会对几个监听器进行回调" class="headerlink" title="2. Spring Boot 在项目启动时，会对几个监听器进行回调"></a>2. Spring Boot 在项目启动时，会对几个监听器进行回调</h4><ul>
+<li><strong>其中：</strong><ul>
 <li>MyApplicationRunner和MyCommandLineRunner都是当项目启动后执行，使用@Component放入容器即可使用</li>
 <li>MyApplicationContextInitializer和SpringApplicationRunListener的使用时,要在resource文件夹下添加META-INF/spring.factories,在配置文件中加入配置</li>
 </ul>
@@ -425,9 +485,7 @@
 </li>
 </ol>
 <p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107212127.png" alt="image-20201107212127309"></p>
-</li>
-</ul>
-<h2 id="启动流程图"><a href="#启动流程图" class="headerlink" title="启动流程图"></a>启动流程图</h2><p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107222428.png"></p>
+<h2 id="三-启动流程图"><a href="#三-启动流程图" class="headerlink" title="三. 启动流程图"></a>三. 启动流程图</h2><p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201107222428.png"></p>
 ]]></content>
       <categories>
         <category>Java</category>
