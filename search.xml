@@ -278,7 +278,7 @@
   </entry>
   <entry>
     <title>POI以及EasyExcel的整理</title>
-    <url>/2018/12/24/POI%E4%BB%A5%E5%8F%8AEasyExcel%E7%9A%84%E6%95%B4%E7%90%86/</url>
+    <url>/2019/01/07/POI%E4%BB%A5%E5%8F%8AEasyExcel%E7%9A%84%E6%95%B4%E7%90%86/</url>
     <content><![CDATA[<blockquote class="blockquote-center">
 <p>POI和EasyExcel是目前两种最常见的excel等文件的读写工具，最近项目需要过来提前学习了解一下，简单做一遍总结加深一下自己的印象，了解流程，还有许多进阶的API没有总结，等到用的时候有问题在做总结把。</p>
 
