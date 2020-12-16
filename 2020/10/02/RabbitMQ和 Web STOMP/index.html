@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon16.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ifuxing.cool","root":"/","images":"/images","scheme":"Gemini","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="什么时候需要消息推送呢？ 1.你的应用需要提供给多个用户同时交流吗? 2.你的应用需要展示或提供服务器端经常变动的数据吗？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ和Web STOMP实现消息推送">
+<meta property="og:url" content="https://ifuxing.cool/2020/10/02/RabbitMQ%E5%92%8C%20Web%20STOMP/index.html">
+<meta property="og:site_name" content="ifuxing">
+<meta property="og:description" content="什么时候需要消息推送呢？ 1.你的应用需要提供给多个用户同时交流吗? 2.你的应用需要展示或提供服务器端经常变动的数据吗？">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ifuxing.cool/images/loading.png">
+<meta property="og:image" content="https://ifuxing.cool/images/loading.png">
+<meta property="og:image" content="https://ifuxing.cool/images/loading.png">
+<meta property="article:published_time" content="2020-10-02T08:43:31.000Z">
+<meta property="article:modified_time" content="2020-12-16T10:15:52.879Z">
+<meta property="article:author" content="Felstar">
+<meta property="article:tag" content="MQ消息队列">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ifuxing.cool/images/loading.png">
+
+
+<link rel="canonical" href="https://ifuxing.cool/2020/10/02/RabbitMQ%E5%92%8C%20Web%20STOMP/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>RabbitMQ和Web STOMP实现消息推送 | ifuxing</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="ifuxing" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">ifuxing</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">福星小栈</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E7%AE%80%E4%BB%8B"><span class="nav-text">一. 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81"><span class="nav-text">1.如何实现消息推送</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-Ajax-%E7%9F%AD%E8%BD%AE%E8%AF%A2"><span class="nav-text">1.1 Ajax 短轮询</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E9%95%BF%E8%BD%AE%E8%AF%A2"><span class="nav-text">1.2 长轮询</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-WebSocket-%E5%8F%8C%E5%90%91%E9%80%9A%E4%BF%A1"><span class="nav-text">1.3 WebSocket 双向通信</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-%E4%B8%89%E7%A7%8D%E6%8A%80%E6%9C%AF%E6%AF%94%E8%BE%83"><span class="nav-text">1.4 三种技术比较</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-WebSocket%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">2.WebSocket应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1%E5%88%A4%E6%96%AD%E6%A0%87%E5%87%86"><span class="nav-text">2.1判断标准</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">2.2应用场景</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-RabbitMQ-Web-STOMP-%E6%8F%92%E4%BB%B6"><span class="nav-text">2. RabbitMQ  Web STOMP 插件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%B5%8B%E8%AF%95%E5%AE%9E%E4%BE%8B"><span class="nav-text">2.1 测试实例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%A6%82%E4%BD%95%E6%95%B4%E5%90%88%E5%88%B0%E4%B8%9A%E5%8A%A1%E4%BB%A3%E7%A0%81%E4%B8%AD%EF%BC%88SpringBoot%EF%BC%89"><span class="nav-text">3.如何整合到业务代码中（SpringBoot）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E5%85%88%E5%AE%9A%E4%B9%89%E9%80%9A%E4%BF%A1%E4%BA%A4%E6%8D%A2%E6%9C%BA%E7%9A%84%E5%90%8D%E5%AD%97"><span class="nav-text">3.1 先定义通信交换机的名字</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E5%AE%9A%E4%B9%89%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%B9%B6%E6%B3%A8%E5%85%A5Bean"><span class="nav-text">3.2 定义交换机并注入Bean</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E5%9C%A8%E5%B7%A5%E7%A8%8B%E4%B8%AD%E6%B7%BB%E5%8A%A0%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%9A%84%E4%BE%9D%E8%B5%96"><span class="nav-text">3.3 在工程中添加消息队列的依赖</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E5%88%9B%E5%BB%BA%E5%90%91RabbitMQ%E6%8E%A8%E9%80%81%E6%B6%88%E6%81%AF%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-text">3.4 创建向RabbitMQ推送消息的方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-%E6%9C%80%E5%90%8E%E5%9C%A8%E9%9C%80%E8%A6%81%E7%9A%84%E6%8E%A8%E9%80%81%E6%B6%88%E6%81%AF%E7%9A%84%E4%B8%9A%E5%8A%A1%E4%BB%A3%E7%A0%81%E4%B8%AD%E6%B7%BB%E5%8A%A0%E6%96%B9%E6%B3%95%E5%8D%B3%E5%8F%AF%EF%BC%8C%E8%BF%99%E6%A0%B7%E5%B0%B1%E5%AE%9E%E7%8E%B0%E4%BA%86%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%EF%BC%8C%E5%A4%9A%E4%B8%AA%E7%94%A8%E6%88%B7%E8%AE%BF%E9%97%AE%E8%BF%99%E4%B8%AA%E7%AB%AF%E5%8F%A3%E9%83%BD%E8%83%BD%E5%BE%97%E5%88%B0%E8%BF%99%E4%BA%9B%E6%95%B0%E6%8D%AE"><span class="nav-text">3.5 最后在需要的推送消息的业务代码中添加方法即可，这样就实现了消息推送，多个用户访问这个端口都能得到这些数据</span></a></li></ol></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Felstar"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Felstar</p>
+  <div class="site-description" itemprop="description">不论什么时候，你的眼里都要有光呀！</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ifuxing.cool/2020/10/02/RabbitMQ%E5%92%8C%20Web%20STOMP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Felstar">
+      <meta itemprop="description" content="不论什么时候，你的眼里都要有光呀！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ifuxing">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RabbitMQ和Web STOMP实现消息推送
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-10-02 16:43:31" itemprop="dateCreated datePublished" datetime="2020-10-02T16:43:31+08:00">2020-10-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote class="blockquote-center">
+<p>什么时候需要消息推送呢？</p>
+<p>1.你的应用需要提供给多个用户同时交流吗?</p>
+<p>2.你的应用需要展示或提供服务器端经常变动的数据吗？</p>
+
+</blockquote>
+<a id="more"></a>
+
+
+
+<h2 id="一-简介"><a href="#一-简介" class="headerlink" title="一. 简介"></a>一. 简介</h2><h3 id="1-如何实现消息推送"><a href="#1-如何实现消息推送" class="headerlink" title="1.如何实现消息推送"></a>1.如何实现消息推送</h3><h4 id="1-1-Ajax-短轮询"><a href="#1-1-Ajax-短轮询" class="headerlink" title="1.1 Ajax 短轮询"></a>1.1 Ajax 短轮询</h4><p>Ajax 轮询主要通过页面端的 JS 定时异步刷新任务来实现数据的加载。</p>
+<p>如果我们使用ajax短轮询方式，需要后端提供方法，通过调用后端接口实现查询数据变化 。前端每间隔三秒查询一次，然后根据后端返回的数据进行前端操作。</p>
+<p><strong>缺点</strong>：这种方式实时效果较差，而且对服务端的压力也较大。</p>
+<h4 id="1-2-长轮询"><a href="#1-2-长轮询" class="headerlink" title="1.2 长轮询"></a>1.2 长轮询</h4><p>长轮询主要也是通过 Ajax 机制，但区别于传统的 Ajax 应用，长轮询的服务器端会在没有数据时阻塞请求直到有新的数据产生或者请求超时才返回，之后客户端再重新建立连接获取数据。</p>
+<p>如果使用长轮询，也同样需要后端提供方法，通过调用后端接口实现查询数据变化，只不过循环是写在后端的。</p>
+<p><strong>缺点</strong>：长轮询服务端会长时间地占用资源，如果消息频繁发送的话会给服务端带来较大的压力。</p>
+<h4 id="1-3-WebSocket-双向通信"><a href="#1-3-WebSocket-双向通信" class="headerlink" title="1.3 WebSocket 双向通信"></a>1.3 WebSocket 双向通信</h4><p>WebSocket 是 HTML5 中一种新的通信协议，能够实现浏览器与服务器之间全双工通信。如果浏览器和服务端都支持 WebSocket 协议的话，该方式实现的消息推送无疑是最高效、简洁的。并且最新版本的 IE、Firefox、Chrome、webkit内核的手机浏览器等浏览器都已经支持 WebSocket 协议，Apache Tomcat 7.0.27 以后的版本也开始支持 WebSocket。</p>
+<h4 id="1-4-三种技术比较"><a href="#1-4-三种技术比较" class="headerlink" title="1.4 三种技术比较"></a>1.4 三种技术比较</h4><table>
+<thead>
+<tr>
+<th></th>
+<th>短轮询</th>
+<th>长轮询</th>
+<th><strong>WebSocket</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>通讯方式</td>
+<td>http</td>
+<td>http</td>
+<td>基于TCP长连接通讯</td>
+</tr>
+<tr>
+<td>触发方式</td>
+<td>轮询</td>
+<td>轮询</td>
+<td>事件</td>
+</tr>
+<tr>
+<td>优点</td>
+<td>简单，兼容性好</td>
+<td>相对短轮询资源占用少</td>
+<td>全双工通讯，性能好，安全</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>不安全，占资源</td>
+<td>不安全，占资源</td>
+<td>传输需要进行二次解析，操作难</td>
+</tr>
+<tr>
+<td>使用范围</td>
+<td>B/S服务</td>
+<td>B/S服务</td>
+<td>网游，支付等</td>
+</tr>
+</tbody></table>
+<p><strong>概念</strong>：全双工就是双向同时通信，就是说双方可以同时发送和接受信息。</p>
+<h3 id="2-WebSocket应用场景"><a href="#2-WebSocket应用场景" class="headerlink" title="2.WebSocket应用场景"></a>2.WebSocket应用场景</h3><h4 id="2-1判断标准"><a href="#2-1判断标准" class="headerlink" title="2.1判断标准"></a>2.1判断标准</h4><ol>
+<li>你的应用需要提供给多个用户同时交流吗?</li>
+<li>你的应用需要展示或提供服务器端经常变动的数据吗？</li>
+</ol>
+<h4 id="2-2应用场景"><a href="#2-2应用场景" class="headerlink" title="2.2应用场景"></a>2.2应用场景</h4><p>1）<strong>社交/订阅</strong></p>
+<blockquote>
+<p>比如微信朋友圈的实时更新提醒、点赞或评论的红点通知，比如qq的特别关注人的动态提醒，比如聊天信息的实时同步，比如新闻客户端的订阅通知等等。</p>
+</blockquote>
+<p>2）<strong>多玩家游戏</strong></p>
+<blockquote>
+<p>对于在线实时的多人游戏，互动效率是非常重要的，你可不想在扣动扳机之后，你的对手却已经在10秒钟之前移动了位置。</p>
+</blockquote>
+<p>3）<strong>协同办公 / 编辑</strong></p>
+<blockquote>
+<p>我们生活在分散式办公的时代，时常需要在不同地点同时编辑同一份文档，比如 office文档、编程文件等。</p>
+</blockquote>
+<p>4）<strong>股市基金报价</strong></p>
+<blockquote>
+<p>金融界瞬息万变——几乎是每毫秒都在变化。过时的信息也只能导致损失，我们人类的大脑不能持续以那样的速度处理那么多的数据，需要一些算法来帮我们处理这些事情。当你有一个显示盘来跟踪你感兴趣的公司时，你肯定想要随时知道他们的价值，而不是10秒前的数据。使用WebSocket可以流式更新这些数据变化而不需要等待。</p>
+</blockquote>
+<p>5）<strong>体育实况播放</strong></p>
+<blockquote>
+<p>在体育播报的体验中，减低时延是最重要的一点。</p>
+</blockquote>
+<p>6）<strong>音视频聊天 / 视频会议 / 在线教育</strong></p>
+<blockquote>
+<p>用WebSockets getUserMedia API和HTML5音视频元素明显是个不错的选择。WebRTC的出现顺理成章的成为我刚才概括的组合体，它看起来很有希望，但其缺乏目前浏览器的支持。</p>
+</blockquote>
+<p>7）<strong>基于位置的应用</strong></p>
+<blockquote>
+<p>越来越多的开发者借用移动设备的GPS功能来实现他们基于位置的网络应用。比如共享单车、共享汽车、地图GPS服务、疫情监控目标人的实时运动轨迹、运动员的轨迹分析。借用WebSocket TCP链接可以让数据飞起来。</p>
+</blockquote>
+<h3 id="2-RabbitMQ-Web-STOMP-插件"><a href="#2-RabbitMQ-Web-STOMP-插件" class="headerlink" title="2. RabbitMQ  Web STOMP 插件"></a>2. RabbitMQ  Web STOMP 插件</h3><p>借助于 RabbitMQ 的 Web STOMP 插件，实现浏览器与服务端的全双工通信。从本质上说，RabbitMQ 的 Web STOMP 插件也是利用 WebSocket 对 STOMP 协议进行了一次桥接，从而实现浏览器与服务端的双向通信。</p>
+<p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201216172409.png" alt="image-20201216172409101"></p>
+<h4 id="2-1-测试实例"><a href="#2-1-测试实例" class="headerlink" title="2.1 测试实例"></a>2.1 测试实例</h4><p>插件的安装这里不做描述，网上都有</p>
+<p>1）访问<a target="_blank" rel="noopener" href="http://ip:15670/">http://ip:15670/</a></p>
+<p>一般端口号为15670，可以看到stomp的例子</p>
+<p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201216173024.png" alt="image-20201216173024573"></p>
+<p>2）根据stomp的例子代码创建一个页面</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>RabbitMQ Web STOMP Examples : Echo Server<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;js/stomp.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> client = Stomp.client(<span class="string">&#x27;ws://localhost:15674/ws&#x27;</span>);</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> on_connect = <span class="function"><span class="keyword">function</span>(<span class="params">x</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        id = client.subscribe(<span class="string">&quot;/exchange/paynotify&quot;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">d</span>) </span>&#123;</span></span><br><span class="line">            alert(d.body);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;;</span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> on_error =  <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">console</span>.log(<span class="string">&#x27;error&#x27;</span>);</span></span><br><span class="line">    &#125;;</span><br><span class="line"><span class="javascript">    client.connect(<span class="string">&#x27;guest&#x27;</span>, <span class="string">&#x27;guest&#x27;</span>, on_connect, on_error, <span class="string">&#x27;/&#x27;</span>);</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>3）我们在rabbitmq中创建一个叫paynotify的交换机（fanout类型）</p>
+<p><img src="/images/loading.png" data-original="https://cdn.jsdelivr.net/gh/ifuxing/pic_star@main/notes-pic/20201216173230.png" alt="image-20201216173230421"></p>
+<p>4）测试，我们在rabbitmq管理界面中向paynotify交换机发送消息，页面就会接收这个消息。</p>
+<h3 id="3-如何整合到业务代码中（SpringBoot）"><a href="#3-如何整合到业务代码中（SpringBoot）" class="headerlink" title="3.如何整合到业务代码中（SpringBoot）"></a>3.如何整合到业务代码中（SpringBoot）</h3><h4 id="3-1-先定义通信交换机的名字"><a href="#3-1-先定义通信交换机的名字" class="headerlink" title="3.1 先定义通信交换机的名字"></a>3.1 先定义通信交换机的名字</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通信交换机名称</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> String MICROSOFT_EXCHANGE_NAME = <span class="string">&quot;micro_app_exchange&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-定义交换机并注入Bean"><a href="#3-2-定义交换机并注入Bean" class="headerlink" title="3.2 定义交换机并注入Bean"></a>3.2 定义交换机并注入Bean</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.restkeeper.utils.SystemCode;</span><br><span class="line"><span class="keyword">import</span> org.springframework.amqp.core.TopicExchange;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RabbitMqConfig</span></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 定义H5点餐交换机</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> TopicExchange <span class="title">vendoutExchange</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> TopicExchange(SystemCode.MICROSOFT_EXCHANGE_NAME,<span class="keyword">true</span>,<span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：这里的交换机类型根据业务需求来定</p>
+<p><strong>交换机类型</strong></p>
+<ul>
+<li><p><strong>Direct Exchange</strong></p>
+<p>处理路由键。需要将一个队列绑定到交换机上，要求该消息与一个特定的路由键完全匹配。这是一个完整的匹配。如果一个队列绑定到该交换机上要求路由键 “abc”，则只有被标记为“abc”的消息才被转发，不会转发abc.def，也不会转发dog.ghi，只会转发abc。</p>
+</li>
+<li><p><strong>Fanout Exchange</strong></p>
+<p>不处理路由键。你只需要简单的将队列绑定到交换机上。一个发送到交换机的消息都会被转发到与该交换机绑定的所有队列上。很像子网广播，每台子网内的主机都获得了一份复制的消息。Fanout交换机转发消息是最快的。</p>
+</li>
+<li><p><strong>Topic Exchange</strong></p>
+<p>将路由键和某模式进行匹配。此时队列需要绑定要一个模式上。符号“#”匹配一个或多个词，符号“*”匹配不多不少一个词。因此“abc.#”能够匹配到“abc.def.ghi”，但是“abc.*” 只会匹配到“abc.def”。</p>
+</li>
+<li><p><strong>Headers Exchanges</strong></p>
+<p>不处理路由键。而是根据发送的消息内容中的headers属性进行匹配。在绑定Queue与Exchange时指定一组键值对；当消息发送到RabbitMQ时会取到该消息的headers与Exchange绑定时指定的键值对进行匹配；如果完全匹配则消息会路由到该队列，否则不会路由到该队列。headers属性是一个键值对，可以是Hashtable，键值对的值可以是任何类型。而fanout，direct，topic 的路由键都需要要字符串形式的。</p>
+<p>匹配规则x-match有下列两种类型：</p>
+<p>x-match = all ：表示所有的键值对都匹配才能接受到消息</p>
+<p>x-match = any ：表示只要有键值对匹配就能接受到消息</p>
+<h4 id="3-3-在工程中添加消息队列的依赖"><a href="#3-3-在工程中添加消息队列的依赖" class="headerlink" title="3.3 在工程中添加消息队列的依赖"></a>3.3 在工程中添加消息队列的依赖</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-amqp<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-创建向RabbitMQ推送消息的方法"><a href="#3-4-创建向RabbitMQ推送消息的方法" class="headerlink" title="3.4 创建向RabbitMQ推送消息的方法"></a>3.4 创建向<strong>RabbitMQ</strong>推送消息的方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">sendToMQ</span><span class="params">(String XId,String jsonMsg)</span></span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        MessageProperties msgProp = <span class="keyword">new</span> MessageProperties();</span><br><span class="line">        msgProp.setContentType(MessageProperties.CONTENT_TYPE_JSON);</span><br><span class="line">        msgProp.setDeliveryMode(MessageDeliveryMode.PERSISTENT);</span><br><span class="line">        Message message = <span class="keyword">new</span> Message(jsonMsg.getBytes(<span class="string">&quot;UTF-8&quot;</span>),msgProp);</span><br><span class="line">        rabbitTemplate.send(SystemCode.MICROSOFT_EXCHANGE_NAME,XId,message);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        log.error(<span class="string">&quot;发送消息失败&quot;</span>,e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>这里的XId作为routingkey</strong></p>
+<h4 id="3-5-最后在需要的推送消息的业务代码中添加方法即可，这样就实现了消息推送，多个用户访问这个端口都能得到这些数据"><a href="#3-5-最后在需要的推送消息的业务代码中添加方法即可，这样就实现了消息推送，多个用户访问这个端口都能得到这些数据" class="headerlink" title="3.5 最后在需要的推送消息的业务代码中添加方法即可，这样就实现了消息推送，多个用户访问这个端口都能得到这些数据"></a>3.5 最后在需要的推送消息的业务代码中添加方法即可，这样就实现了消息推送，多个用户访问这个端口都能得到这些数据</h4></li>
+</ul>
+<hr>
+<p><strong>参考文章</strong>：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/shine-lovely/p/13440030.html">WebSocket应用场景</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/linyufeng/p/9885020.html">RabbitMQ的四种交换机类型</a></p>
+
+    </div>
+
+    
+    
+    
+  <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 文章到底啦 ❤ 感谢阅读！------</div>
+    
+  </div>
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Felstar
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://ifuxing.cool/2020/10/02/RabbitMQ%E5%92%8C%20Web%20STOMP/" title="RabbitMQ和Web STOMP实现消息推送">https://ifuxing.cool/2020/10/02/RabbitMQ和 Web STOMP/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/MQ%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag"><i class="fa fa-tag"></i> MQ消息队列</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/09/13/Redis%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E6%97%8B%E9%94%81/" rel="prev" title="Redis分布式自旋锁防止超卖">
+                  <i class="fa fa-chevron-left"></i> Redis分布式自旋锁防止超卖
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Felstar</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">37k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">34 分钟</span>
+  </span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+-->
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=i;var e=n.imageLazyLoadSetting.isSPA,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight||document.documentElement.clientHeight)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},n.src=i}()}i(),n.addEventListener("scroll",function(){var t,e;t=i,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+</html>

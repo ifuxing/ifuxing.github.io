@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://ifuxing.cool/2020/10/02/RabbitMQ%E5%92%8C%20Web%20STOMP/</loc>
+    
+    <lastmod>2020-12-16</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://ifuxing.cool/2020/03/19/Dubbo%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%95%B4%E7%90%86/</loc>
+    
+    <lastmod>2020-12-16</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://ifuxing.cool/2020/09/13/Redis%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E6%97%8B%E9%94%81/</loc>
     
     <lastmod>2020-12-15</lastmod>
@@ -51,13 +65,6 @@
   </url>
   
   <url>
-    <loc>https://ifuxing.cool/2020/03/19/Dubbo%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%95%B4%E7%90%86/</loc>
-    
-    <lastmod>2020-11-30</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://ifuxing.cool/404.html</loc>
     
     <lastmod>2020-11-23</lastmod>
@@ -88,7 +95,7 @@
 
   <url>
     <loc>https://ifuxing.cool/</loc>
-    <lastmod>2020-12-15</lastmod>
+    <lastmod>2020-12-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -96,42 +103,49 @@
   
   <url>
     <loc>https://ifuxing.cool/tags/Dubbo/</loc>
-    <lastmod>2020-12-15</lastmod>
+    <lastmod>2020-12-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://ifuxing.cool/tags/Efficient/</loc>
-    <lastmod>2020-12-15</lastmod>
+    <lastmod>2020-12-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://ifuxing.cool/tags/Excel/</loc>
-    <lastmod>2020-12-15</lastmod>
+    <lastmod>2020-12-16</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://ifuxing.cool/tags/MQ%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/</loc>
+    <lastmod>2020-12-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://ifuxing.cool/tags/Redis/</loc>
-    <lastmod>2020-12-15</lastmod>
+    <lastmod>2020-12-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://ifuxing.cool/tags/Testing/</loc>
-    <lastmod>2020-12-15</lastmod>
+    <lastmod>2020-12-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://ifuxing.cool/tags/Spring-Boot/</loc>
-    <lastmod>2020-12-15</lastmod>
+    <lastmod>2020-12-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
@@ -140,14 +154,14 @@
   
   <url>
     <loc>https://ifuxing.cool/categories/Java/</loc>
-    <lastmod>2020-12-15</lastmod>
+    <lastmod>2020-12-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
     <loc>https://ifuxing.cool/categories/Diary/</loc>
-    <lastmod>2020-12-15</lastmod>
+    <lastmod>2020-12-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
